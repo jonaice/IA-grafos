@@ -235,6 +235,7 @@ while running:
                         except OSError as e:
                             print(f"Error al eliminar el archivo: {e}")
                         running = False
+                        subprocess.Popen(["python", "main.py"])
 
                 if not clicked_on_button and pos[0] < EDITOR_WIDTH:
                     clicked_on_object = False

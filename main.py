@@ -80,7 +80,7 @@ HOVER_GRAY = (75, 75, 110)
 HOVER_GREEN = (80, 200, 90)
 HOVER_RED = (210, 80, 80)
 BASE_PATH = os.path.dirname(__file__)
-IMG_PATH = os.path.join(BASE_PATH, "img", "fondo_menu.png")
+IMG_PATH = os.path.join(BASE_PATH,"interfaz" ,"img", "fondo_menu.png")
 
 # Fuente
 font = pygame.font.SysFont("arial", 16)
@@ -198,7 +198,7 @@ while running:
 
             elif btn_back.collidepoint(mx, my):
                 try:
-                    subprocess.Popen(["python", "editorEscenarios.py"])
+                    subprocess.Popen(["python", "interfaz/editorEscenarios.py"])
                     pygame.quit()
                     sys.exit()
                 except Exception as e:
