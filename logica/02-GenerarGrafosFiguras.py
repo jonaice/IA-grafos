@@ -26,6 +26,15 @@ contador_por_tipo = {}
 # === FUNCIONES ===
 
 def extraer_vertices(img,angle):
+
+    #Rotar la imagen
+    if(angle!=0):
+        h, w = img.shape[:2] # Obtiene alto y ancho de la imagen
+        centro = (w // 2, h // 2)
+        matriz_rotacion = cv2.getRotationMatrix2D(centro, angle, 1.0)
+        # Aplicar rotación
+        img = cv2.warpAffine(img, matriz_rotacion, (w, h))
+
     if img.shape[2] == 4:
         gray = img[:, :, 3]  # Canal alfa
         _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
@@ -33,14 +42,7 @@ def extraer_vertices(img,angle):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
 
-    #Rotar la imagen
-    if(angle!=0):
-        h, w = thresh.shape[:2] # Obtiene alto y ancho de la imagen
-        centro = (w // 2, h // 2)
-        matriz_rotacion = cv2.getRotationMatrix2D(centro, angle, 1.0)
-        # Aplicar rotación
-        tresh = cv2.warpAffine(tresh, matriz_rotacion, (w, h))
-
+    
 
     contornos, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contornos:
