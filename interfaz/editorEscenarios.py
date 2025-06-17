@@ -2,6 +2,8 @@ import pygame
 import json
 import math
 import os
+import sys
+import subprocess
 
 # --- 1. Inicialización y Constantes ---
 pygame.init()
@@ -209,6 +211,9 @@ while running:
                             if guardar_escenario(objetos_en_escenario):
                                 feedback_message = "¡Escenario guardado!"
                                 feedback_timer = 180
+                                subprocess.Popen(["python", "main.py"])
+                                pygame.quit()
+                                sys.exit()
                         else:
                             feedback_message = "Falta el robot y/o la bandera"
                             feedback_timer = 180
