@@ -1,3 +1,5 @@
+import os
+
 def leer_todo_del_archivo_Costo_uniforme(ruta):
     grafo = {}
     nodo_inicio = None
@@ -87,7 +89,9 @@ def ejecutar_busqueda_costo_uniforme_desde_archivo(ruta_archivo):
 
 # MAIN de prueba
 if __name__ == "__main__":
-    camino, costo = ejecutar_busqueda_costo_uniforme_desde_archivo("datos_completos.txt")
+    BASE_DIR = os.path.dirname(__file__)
+    ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "datos_completos.txt"))
+    camino, costo = ejecutar_busqueda_costo_uniforme_desde_archivo(ruta_archivo)
     if camino:
         print("Camino encontrado:", camino)
         print("Costo total del camino:", costo)
