@@ -81,5 +81,3 @@ if camino:
     print("Camino encontrado:", camino)
 else:
     print("No se encontró un camino.")
-
-#busqueda profundizacion iterativa
