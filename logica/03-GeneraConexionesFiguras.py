@@ -82,4 +82,5 @@ nuevo_json = {
 with open(ARCHIVO_SALIDA, "w") as f:
     json.dump(nuevo_json, f, indent=4)
 
-print(f"✅ Grafo sin cruce y con visibilidad desde Robot y Bandera guardado en {ARCHIVO_SALIDA}")
+print(f"Grafo sin cruce y con visibilidad desde Robot y Bandera guardado en {ARCHIVO_SALIDA}")
+
