@@ -98,7 +98,7 @@ while running:
 
         # Ruta base absoluta al archivo fondo.png
         BASE_PATH = os.path.dirname(__file__)
-        IMG_PATH = os.path.join(BASE_PATH, "img", "fondo.PNG")
+        IMG_PATH = os.path.join(BASE_PATH, "img", "fondo.png")
         fondo_imagen = pygame.image.load(IMG_PATH).convert()
         juego_area = pygame.Rect(60, 120, WIDTH - 120, HEIGHT - 160)  # más grande
         fondo_ajustado = pygame.transform.scale(fondo_imagen, (juego_area.width, juego_area.height))
