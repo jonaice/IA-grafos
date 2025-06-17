@@ -6,6 +6,7 @@ import os
 # === CONFIGURACIÓN ===
 BASE_DIR = os.path.dirname(__file__)
 ARCHIVO_ESCENARIO = os.path.abspath(os.path.join(BASE_DIR, "..", "interfaz", "escenario.json"))
+
 ANCHO_LIENZO = 1000
 ALTO_LIENZO = 720
 

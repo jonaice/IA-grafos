@@ -4,8 +4,8 @@ from shapely.geometry import Polygon, LineString
 from math import atan2
 
 # === CONFIGURACIÓN ===
-ARCHIVO_ENTRADA = "lografo_figuras.json"
-ARCHIVO_SALIDA = "grafo_sin_cruce.json"
+ARCHIVO_ENTRADA = "logica/grafo_figuras.json"
+ARCHIVO_SALIDA = "logica/grafo_sin_cruce.json"
 
 # === CARGAR GRAFO ORIGINAL ===
 with open(ARCHIVO_ENTRADA) as f:

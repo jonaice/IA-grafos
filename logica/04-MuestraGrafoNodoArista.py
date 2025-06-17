@@ -6,7 +6,14 @@ import os
 # Cargar el grafo generado con conexiones visibles
 
 
-with open("logica/grafo_sin_cruce.json", "r") as f:
+#01
+#ARCHIVO_ENTRADA="logica/grafo_figuras.json"
+
+#02
+ARCHIVO_ENTRADA="logica/grafo_sin_cruce.json"
+
+
+with open(ARCHIVO_ENTRADA, "r") as f:
     data = json.load(f)
 
 G = nx.Graph()
