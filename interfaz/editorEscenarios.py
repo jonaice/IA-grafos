@@ -104,7 +104,7 @@ def guardar_escenario(objetos):
         data = { 'path': obj.path, 'pos': (obj.rect.centerx, obj.rect.centery), 'angle': round(obj.angle, 2) }
         escenario_data.append(data)
     try:
-        with open('escenario.json', 'w') as f:
+        with open('interfaz/escenario.json', 'w') as f:
             json.dump(escenario_data, f, indent=4)
         print("¡Escenario guardado con éxito en 'escenario.json'!")
         return True
