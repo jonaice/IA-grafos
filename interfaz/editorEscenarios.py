@@ -24,11 +24,11 @@ font_bold = pygame.font.Font(None, 28)
 # --- 2. Carga de Assets (Imágenes) ---
 
 ASSET_PATHS = {
-    'obs1': 'obstaculo1.png', 'obs2': 'obstaculo2.png', 'obs3': 'obstaculo3.png',
-    'obs4': 'obstaculo4.png', 'obs5': 'obstaculo5.png', 'obs6': 'obstaculo6.png',
-    'obs7': 'obstaculo7.png', 'obs8': 'obstaculo8.png', 'robot': 'robot.png',
-    'flag': 'bandera.png',
-    'background': 'fondo.png' # <-- NUEVO: Ruta para la imagen de fondo
+    'obs1': 'interfaz/img/obstaculo1.png', 'obs2': 'interfaz/img/obstaculo2.png', 'obs3': 'interfaz/img/obstaculo3.png',
+    'obs4': 'interfaz/img/obstaculo4.png', 'obs5': 'interfaz/img/obstaculo5.png', 'obs6': 'interfaz/img/obstaculo6.png',
+    'obs7': 'interfaz/img/obstaculo7.png', 'obs8': 'interfaz/img/obstaculo8.png', 'robot': 'rinterfaz/img/obot.png',
+    'flag': 'interfaz/img/bandera.png',
+    'background': 'interfaz/img/fondo.png' # <-- NUEVO: Ruta para la imagen de fondo
 }
 
 IMAGES = {}
