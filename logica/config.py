@@ -1,4 +1,6 @@
 import numpy as np
+import os
+
 
 # Canvas blanco
 canvas = np.ones((800, 1200, 3), dtype=np.uint8) * 255
@@ -9,11 +11,11 @@ max_width = 200
 
 # Variables globales
 imagenes_config = [
-    {"nombre": "recursos/casa.png"},
-    #{"nombre": "recursos/edificio.png"},
-    #{"nombre": "recursos/arbol.png"},
-    #{"nombre": "recursos/roca.png"},
-    #{"nombre": "recursos/coche.png"},
+    {"nombre": "img/casa.png"},
+    #{"nombre": "img/edificio.png"},
+    #{"nombre": "img/arbol.png"},
+    #{"nombre": "img/roca.png"},
+    #{"nombre": "img/coche.png"},
 ]
 
 imagenes_cargadas = []

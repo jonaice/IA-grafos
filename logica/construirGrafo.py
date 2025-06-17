@@ -2,6 +2,8 @@ import json
 import cv2
 import numpy
 import utlis
+import os
+
 max_width = 200
 
 #Leemos en Json del lienzo
@@ -9,7 +11,12 @@ def leerEscenarioJson(path):
     datos = []
     imgs = []
     # Abre el archivo en modo lectura
-    with open('escenario.json', 'r') as archivo:
+
+
+    BASE_DIR = os.path.dirname(__file__)
+    json_path = os.path.abspath(os.path.join(BASE_DIR, "..", "interfaz", "escenario.json"))
+
+    with open(json_path, 'r') as archivo:
         datos = json.load(archivo)
     if datos!=[]:
         for elemento in datos:
@@ -66,7 +73,7 @@ def NodosJson(nodos, node_labels, aristas, start_node, end_node):
         "grafo": grafo_final,
         "coordenadas": coordenadas
     }
-    with open("grafo_coords.json", "w") as f:
+    with open("logica/grafo_coords.json", "w") as f:
             json.dump(salida, f, indent=4) # Guarda el grafo en un archivo JSON
     print("✅ Grafo global guardado en grafo_global.json")
         
