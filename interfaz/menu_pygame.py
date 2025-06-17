@@ -1,6 +1,7 @@
 import pygame
 import sys
 import subprocess
+import os
 
 # Inicializar pygame
 pygame.init()
@@ -94,7 +95,11 @@ while running:
 
     # Área de visualización del escenario (con imagen fondo)
     try:
-        fondo_imagen = pygame.image.load("fondo.PNG").convert()
+
+        # Ruta base absoluta al archivo fondo.png
+        BASE_PATH = os.path.dirname(__file__)
+        IMG_PATH = os.path.join(BASE_PATH, "img", "fondo.PNG")
+        fondo_imagen = pygame.image.load(IMG_PATH).convert()
         juego_area = pygame.Rect(60, 120, WIDTH - 120, HEIGHT - 160)  # más grande
         fondo_ajustado = pygame.transform.scale(fondo_imagen, (juego_area.width, juego_area.height))
         pygame.draw.rect(screen, (20, 20, 30), juego_area)  # fondo oscuro
