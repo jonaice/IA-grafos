@@ -39,15 +39,15 @@ def leer_grafo_desde_archivo_ORIGINAL(ruta):
                 grafo[nodo] = lista_hijos
     return grafo
 
-
-def busquedaProfundidad(grafo, nodo_inicio, nodo_meta):
-    nodos = [nodo_inicio] #Lo vamos a trabajar como una cola
-    padres = {nodo_inicio: None}  # Guarda de dónde viene cada nodo
+def busquedaProfundidadLimitada(grafo, nodo_inicio, nodo_meta, profundidad_maxima):
+    nodos = [(nodo_inicio, 0)]  # pila: (nodo, profundidad)
+    padres = {nodo_inicio: None}
 
     while nodos:
-        print("Nodos: ", nodos);
-        nodo = nodos.pop(0)
-        print("Nodo: ", nodo)
+        print("Nodos: ", nodos)
+        nodo, profundidad = nodos.pop()
+        print(f"Nodo: {nodo}, Profundidad: {profundidad}")
+
         if nodo == nodo_meta:
             # Construir camino
             camino = []
@@ -56,18 +56,16 @@ def busquedaProfundidad(grafo, nodo_inicio, nodo_meta):
                 camino.insert(0, actual)
                 actual = padres[actual]
             return camino
-        
-        #Expandir
-        for hijo in reversed(grafo.get(nodo, [])):
-            print("hijo:", hijo)
-            if padres[nodo] is not None and hijo == padres[nodo]:
-                continue  # Saltar al padre
-            else:
-                if hijo not in padres:  # Si no fue visitado ni en cola (porque solo entra a padres si ya fue agregado)
+
+        if profundidad < profundidad_maxima:
+            for hijo in reversed(grafo.get(nodo, [])):  # 👉 usamos reversed aquí
+                print("hijo:", hijo)
+                if padres[nodo] is not None and hijo == padres[nodo]:
+                    continue  # Saltar al padre
+                if hijo not in padres:
                     padres[hijo] = nodo
-                    nodos.insert(0,hijo)
-       
-                
+                    nodos.append((hijo, profundidad + 1))  # directo a la pila
+
     return None  # No se encontró el nodo meta
 
 #Main
@@ -76,10 +74,8 @@ ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "grafo.txt
 grafo, nodo_inicio, nodo_meta = leer_grafo_desde_archivo(ruta_archivo)
 print("grafo", grafo)
 print("grafo A", grafo.get("A",[]))
-camino = busquedaProfundidad(grafo, nodo_inicio, nodo_meta)
+camino = busquedaProfundidadLimitada(grafo, nodo_inicio, nodo_meta,3)
 if camino:
     print("Camino encontrado:", camino)
 else:
     print("No se encontró un camino.")
-
-#busqueda profundizacion iterativa
