@@ -1,5 +1,5 @@
 grafosvenv/
 interfaz/escenario.json
 logica/grafo_coords
-logica/_pycache_
+logica/__pycache__
 *.json
