@@ -22,28 +22,28 @@ with open(ARCHIVO_ESCENARIO) as f:
 grafo = {}
 coordenadas = {}
 contador_por_tipo = {}
+inicio = None
+meta = None
 
 # === FUNCIONES ===
 
-def extraer_vertices(img,angle):
-
-    #Rotar la imagen
-    if(angle!=0):
-        h, w = img.shape[:2] # Obtiene alto y ancho de la imagen
+def extraer_vertices(img, angle):
+    # Rotar la imagen si se requiere
+    if angle != 0:
+        h, w = img.shape[:2]
         centro = (w // 2, h // 2)
         matriz_rotacion = cv2.getRotationMatrix2D(centro, angle, 1.0)
-        # Aplicar rotación
         img = cv2.warpAffine(img, matriz_rotacion, (w, h))
 
+    # Obtener máscara binaria a partir de canal alfa o intensidad
     if img.shape[2] == 4:
-        gray = img[:, :, 3]  # Canal alfa
+        gray = img[:, :, 3]
         _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
     else:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
 
-    
-
+    # Contornos
     contornos, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contornos:
         return []
@@ -52,8 +52,7 @@ def extraer_vertices(img,angle):
     epsilon = UMBRAL_SIMPLIFICACION * cv2.arcLength(contorno, True)
     approx = cv2.approxPolyDP(contorno, epsilon, True)
 
-    vertices = [tuple(p[0]) for p in approx]
-    return vertices
+    return [tuple(p[0]) for p in approx]
 
 def obtener_prefijo(path):
     nombre = path.split(".")[0]
@@ -62,11 +61,11 @@ def obtener_prefijo(path):
             return LETRA_POR_TIPO[tipo]
     return "X"  # Default
 
-# === PROCESAR CADA IMAGEN ===
+# === PROCESAR CADA IMAGEN DEL ESCENARIO ===
 for objeto in escenario:
     archivo = objeto["path"]
     cx, cy = objeto["pos"]
-    angle = objeto["angle"]
+    angle = objeto.get("angle", 0)
 
     if not os.path.exists(archivo):
         print(f"❌ No encontrado: {archivo}")
@@ -77,26 +76,31 @@ for objeto in escenario:
         print(f"❌ No se pudo cargar: {archivo}")
         continue
 
-    tipo = archivo.split(".")[0]  # sin extensión
-    if tipo == "robot":
+    # Nombre base sin ruta ni extensión
+    nombre_base = os.path.splitext(os.path.basename(archivo))[0].lower()
+
+    # === Nodo único para robot ===
+    if nombre_base == "robot":
         nodo_id = "Robot"
         coordenadas[nodo_id] = [cx, cy]
         grafo[nodo_id] = []
         inicio = nodo_id
         continue
-    elif tipo == "bandera":
+
+    # === Nodo único para bandera ===
+    elif nombre_base == "bandera":
         nodo_id = "Bandera"
         coordenadas[nodo_id] = [cx, cy]
         grafo[nodo_id] = []
         meta = nodo_id
         continue
 
-    # Procesar como obstáculo normal
+    # === Procesar como figura normal ===
     h, w = imagen.shape[:2]
     x0 = cx - w // 2
     y0 = cy - h // 2
 
-    vertices_locales = extraer_vertices(imagen,angle)
+    vertices_locales = extraer_vertices(imagen, angle)
     if len(vertices_locales) < 3:
         print(f"⚠️ Pocos vértices en {archivo}")
         continue
@@ -115,17 +119,12 @@ for objeto in escenario:
         coordenadas[nodo_id] = [int(global_x), int(global_y)]
         nodos_figura.append(nodo_id)
 
-    # Conectar nodos en ciclo
+    # Conexiones entre nodos de la figura (en ciclo)
     for i in range(len(nodos_figura)):
         a = nodos_figura[i]
         b = nodos_figura[(i + 1) % len(nodos_figura)]
         grafo.setdefault(a, []).append(b)
         grafo.setdefault(b, []).append(a)
-
-
-# === DETECTAR INICIO Y META
-inicio = next((n for n in coordenadas if n.startswith("R")), None)
-meta = next((n for n in coordenadas if n.startswith("F")), None)
 
 # === GUARDAR JSON ===
 salida = {
@@ -137,4 +136,4 @@ salida = {
 with open(ARCHIVO_SALIDA, "w") as f:
     json.dump(salida, f, indent=4)
 
-print(f"✅ Grafo guardado en {ARCHIVO_SALIDA}")
+print(f"Grafo guardado en {ARCHIVO_SALIDA}")
