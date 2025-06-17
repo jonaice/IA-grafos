@@ -26,7 +26,7 @@ font_bold = pygame.font.Font(None, 28)
 ASSET_PATHS = {
     'obs1': 'interfaz/img/obstaculo1.png', 'obs2': 'interfaz/img/obstaculo2.png', 'obs3': 'interfaz/img/obstaculo3.png',
     'obs4': 'interfaz/img/obstaculo4.png', 'obs5': 'interfaz/img/obstaculo5.png', 'obs6': 'interfaz/img/obstaculo6.png',
-    'obs7': 'interfaz/img/obstaculo7.png', 'obs8': 'interfaz/img/obstaculo8.png', 'robot': 'rinterfaz/img/obot.png',
+    'obs7': 'interfaz/img/obstaculo7.png', 'obs8': 'interfaz/img/obstaculo8.png', 'robot': 'interfaz/img/robot.png',
     'flag': 'interfaz/img/bandera.png',
     'background': 'interfaz/img/fondo.png' # <-- NUEVO: Ruta para la imagen de fondo
 }
