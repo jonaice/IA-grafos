@@ -119,7 +119,7 @@ while running:
                 running = False
             elif btn_back.collidepoint(mx, my):
                 try:
-                    subprocess.Popen(["python", "editorEscenarios.py"])
+                    subprocess.Popen(["python", "interfaz/editorEscenarios.py"])
                     pygame.quit()
                     sys.exit()
 
