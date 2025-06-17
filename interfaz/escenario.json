@@ -2,32 +2,32 @@
     {
         "path": "interfaz/img/bandera.png",
         "pos": [
-            482,
-            132
+            322,
+            72
         ],
         "angle": 0
     },
     {
         "path": "interfaz/img/robot.png",
         "pos": [
-            835,
-            578
+            789,
+            405
         ],
         "angle": 0
     },
     {
         "path": "interfaz/img/obstaculo4.png",
         "pos": [
-            598,
-            381
+            660,
+            271
         ],
         "angle": 0
     },
     {
-        "path": "interfaz/img/obstaculo6.png",
+        "path": "interfaz/img/obstaculo2.png",
         "pos": [
-            704,
-            274
+            862,
+            260
         ],
         "angle": 0
     }
