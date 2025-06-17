@@ -2,15 +2,19 @@ import cv2
 import numpy as np
 from shapely.geometry import Polygon, LineString, Point
 import json
+import os
+
 
 # === CONFIGURACIÓN DE IMÁGENES ===
 # Asegúrate de que 'casa.png' esté en el mismo directorio que tu script.
+
+BASE_PATH = os.path.dirname(__file__)
 imagenes_config = [
-    {"nombre": "casa.png"},
-    # {"nombre": "edificio.png"},
-    # {"nombre": "arbol.png"},
-    # {"nombre": "roca.png"},
-    # {"nombre": "coche.png"}
+    {"nombre": BASE_PATH + "/img/casa.png"},
+    # {"nombre": BASE_PATH +"/img/edificio.png"},
+    # {"nombre": BASE_PATH +"/img/arbol.png"},
+    # {"nombre": BASE_PATH +"/img/roca.png"},
+    # {"nombre": BASE_PATH +"/img/coche.png"}
 ]
 
 canvas = np.ones((800, 1200, 3), dtype=np.uint8) * 255 # Crea un lienzo blanco
@@ -320,7 +324,9 @@ while True:
             "inicio": node_labels.get(start_node, None) if start_node else None,
             "meta": node_labels.get(end_node, None) if end_node else None
         }
-        with open("grafo_global.json", "w") as f:
+
+        BASE_PATH = os.path.dirname(__file__)
+        with open(BASE_PATH + "grafo_global.json", "w") as f:
             json.dump(salida, f, indent=4) # Guarda el grafo en un archivo JSON
         print("✅ Grafo global guardado en grafo_global.json")
         break # Sale del bucle y cierra la aplicación
