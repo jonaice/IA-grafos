@@ -3,3 +3,5 @@ interfaz/escenario.json
 logica/grafo_coords
 logica/__pycache__
 *.json
+logica/datos_completos.txt
+logica/grafo.txt
