@@ -1,41 +1,33 @@
 [
     {
-        "path": "obstaculo3.png",
+        "path": "interfaz/img/bandera.png",
         "pos": [
-            631,
-            349
+            482,
+            132
         ],
         "angle": 0
     },
     {
-        "path": "bandera.png",
+        "path": "interfaz/img/robot.png",
         "pos": [
-            795,
-            134
+            835,
+            578
         ],
         "angle": 0
     },
     {
-        "path": "obstaculo8.png",
+        "path": "interfaz/img/obstaculo4.png",
         "pos": [
-            369,
-            221
+            598,
+            381
         ],
         "angle": 0
     },
     {
-        "path": "robot.png",
+        "path": "interfaz/img/obstaculo6.png",
         "pos": [
-            112,
-            542
-        ],
-        "angle": 0
-    },
-    {
-        "path": "obstaculo7.png",
-        "pos": [
-            863,
-            529
+            704,
+            274
         ],
         "angle": 0
     }
