@@ -109,7 +109,7 @@ def ejecutar_busqueda_avara_desde_archivo(ruta_archivo):
 
 
 # MAIN de prueba
-if __name__ == "__main__":
+def Avara():
     BASE_DIR = os.path.dirname(__file__)
     ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "datos_completos.txt"))
     camino, costo = ejecutar_busqueda_avara_desde_archivo(ruta_archivo)
@@ -119,3 +119,5 @@ if __name__ == "__main__":
         print("Costo total:", costo)
     else:
         print("No se encontró un camino.")
+    
+    return camino

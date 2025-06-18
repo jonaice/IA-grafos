@@ -71,13 +71,15 @@ def busquedaProfundidad(grafo, nodo_inicio, nodo_meta):
     return None  # No se encontró el nodo meta
 
 #Main
-BASE_DIR = os.path.dirname(__file__)
-ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "grafo.txt"))
-grafo, nodo_inicio, nodo_meta = leer_grafo_desde_archivo(ruta_archivo)
-print("grafo", grafo)
-print("grafo A", grafo.get("A",[]))
-camino = busquedaProfundidad(grafo, nodo_inicio, nodo_meta)
-if camino:
-    print("Camino encontrado:", camino)
-else:
-    print("No se encontró un camino.")
+def Profundidad():
+    BASE_DIR = os.path.dirname(__file__)
+    ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "grafo.txt"))
+    grafo, nodo_inicio, nodo_meta = leer_grafo_desde_archivo(ruta_archivo)
+    print("grafo", grafo)
+    print("grafo A", grafo.get("A",[]))
+    camino = busquedaProfundidad(grafo, nodo_inicio, nodo_meta)
+    if camino:
+        print("Camino encontrado:", camino)
+    else:
+        print("No se encontró un camino.")
+    return camino

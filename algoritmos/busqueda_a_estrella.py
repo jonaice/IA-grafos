@@ -105,7 +105,7 @@ def ejecutar_a_estrella_desde_archivo(ruta_archivo):
 
 
 # MAIN de prueba
-if __name__ == "__main__":
+def estrella():
 
     BASE_DIR = os.path.dirname(__file__)
     ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "datos_completos.txt"))
@@ -116,3 +116,4 @@ if __name__ == "__main__":
         print(f"Costo total: {costo}")
     else:
         print("No se encontró un camino.")
+    return camino

@@ -76,13 +76,15 @@ def busquedaProfundizacionIterativa(grafo, nodo_inicio, nodo_meta, profundidad_m
     return None  # No se encontró el nodo meta en ninguna profundidad
 
 # MAIN
-BASE_DIR = os.path.dirname(__file__)
-ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "grafo.txt"))
-grafo, nodo_inicio, nodo_meta = leer_grafo_desde_archivo(ruta_archivo)
-print("Grafo:", grafo)
+def ProfundidadI():
+    BASE_DIR = os.path.dirname(__file__)
+    ruta_archivo = os.path.abspath(os.path.join(BASE_DIR, "..", "logica", "grafo.txt"))
+    grafo, nodo_inicio, nodo_meta = leer_grafo_desde_archivo(ruta_archivo)
+    print("Grafo:", grafo)
 
-camino = busquedaProfundizacionIterativa(grafo, nodo_inicio, nodo_meta, 10)
-if camino:
-    print("Camino encontrado:", camino)
-else:
-    print("No se encontró un camino.")
+    camino = busquedaProfundizacionIterativa(grafo, nodo_inicio, nodo_meta, 10)
+    if camino:
+        print("Camino encontrado:", camino)
+    else:
+        print("No se encontró un camino.")
+    return camino
