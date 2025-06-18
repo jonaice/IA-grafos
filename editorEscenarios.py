@@ -4,9 +4,11 @@ import math
 import os
 import sys
 import subprocess
-#from logica import GenerarGrafosFiguras
-#from logica import GeneraConexionesFiguras
-#from logica import convertidorBusquedaSimple
+
+from logica import GenerarGrafosFiguras
+from logica import GeneraConexionesFiguras
+from logica import convertidorBusquedaSimple
+import menu
 
 # --- 1. Inicialización y Constantes ---
 def Editor():
@@ -214,11 +216,11 @@ def Editor():
                             if player_exists and goal_exists:
                                 if guardar_escenario(objetos_en_escenario):
                                     feedback_message = "¡Escenario guardado!"
-                                    # GenerarGrafosFiguras.generarGrafosFig()
-                                    # GeneraConexionesFiguras.GeneraConnFig()
-                                    # convertidorBusquedaSimple.Convertidor()
+                                    GenerarGrafosFiguras.generarGrafosFig()
+                                    GeneraConexionesFiguras.GeneraConnFig()
+                                    convertidorBusquedaSimple.Convertidor()
                                     feedback_timer = 180
-                                    subprocess.Popen(["python", "main.py"])
+                                    menu.menu()
                                     pygame.quit()
                                     sys.exit()
                             else:
@@ -236,13 +238,12 @@ def Editor():
 
                         elif exit_button.is_clicked(pos):
                             try:
-                                if os.path.exists('escenario.json'):
-                                    os.remove('escenario.json')
+                                if os.path.exists('interfaz/escenario.json'):
+                                    os.remove('interfaz/escenario.json')
                                     print("Archivo 'escenario.json' eliminado.")
                             except OSError as e:
                                 print(f"Error al eliminar el archivo: {e}")
                             running = False
-                            subprocess.Popen(["python", "main.py"])
 
                     if not clicked_on_button and pos[0] < EDITOR_WIDTH:
                         clicked_on_object = False
