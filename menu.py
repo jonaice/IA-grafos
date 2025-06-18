@@ -4,6 +4,7 @@ import subprocess
 import json # <-- AÑADIR IMPORT
 import os   # <-- AÑADIR IMPORT
 import math # <-- AÑADIR IMPORT
+from logica.utils import cargar_coordenadas, traducir_camino_a_coordenadas
 
 #import locales
 from algoritmos import BusqAmplitud
@@ -23,25 +24,39 @@ class ObjetoJuego(pygame.sprite.Sprite):
     """
     Representa un objeto cargado desde el escenario.json (un obstáculo, el jugador, etc.).
     """
-    def __init__(self, pos, image, angle):
+    def __init__(self, pos, image, angle, path):
         super().__init__()
         self.original_image = image
+        self.path = path
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.rect = self.image.get_rect(center=pos)
 
+def calcular_angulo(p1, p2):
+    """Calcula el ángulo en grados desde el punto p1 al punto p2."""
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    # Usamos atan2 para obtener el ángulo en radianes y lo convertimos a grados
+    rads = math.atan2(-dy, dx)
+    rads %= 2 * math.pi
+    degs = math.degrees(rads)
+    degs_corregido = degs + 90
+    return degs_corregido
+
+# main.py
+
 def cargar_escenario_juego(offset):
     """
-    Carga los objetos desde 'escenario.json', ajusta sus posiciones con el offset
-    y los devuelve en un grupo de sprites.
+    Carga los objetos desde 'escenario.json', separa el robot del resto
+    y devuelve ambos.
     """
-    objetos_del_juego = pygame.sprite.Group()
+    objetos_estaticos = pygame.sprite.Group()
+    robot_para_animar = None
     imagenes_cargadas = {}
-    
     offset_x, offset_y = offset
 
     if not os.path.exists('interfaz/escenario.json'):
-        print("⚠ No se encontró el archivo 'escenario.json'. El escenario estará vacío.")
-        return objetos_del_juego
+        print("⚠ No se encontró el archivo 'escenario.json'.")
+        return objetos_estaticos, robot_para_animar
 
     with open('interfaz/escenario.json', 'r') as f:
         data_escenario = json.load(f)
@@ -62,12 +77,22 @@ def cargar_escenario_juego(offset):
         nuevo_x = pos_guardada[0] + offset_x
         nuevo_y = pos_guardada[1] + offset_y
         
-        objeto = ObjetoJuego((nuevo_x, nuevo_y), imagen, angulo_guardado)
-        objetos_del_juego.add(objeto)
-        
-    print(f"✔ Escenario cargado con {len(objetos_del_juego)} objetos.")
-    return objetos_del_juego
+        objeto = ObjetoJuego((nuevo_x, nuevo_y), imagen, angulo_guardado, path)
 
+        # --- LÓGICA DE SEPARACIÓN INTERNA ---
+        # Si el objeto es el robot, lo guardamos en su propia variable.
+        if "robot.png" in path:
+            robot_para_animar = objeto
+        # Si es cualquier otro objeto, lo añadimos al grupo de sprites estáticos.
+        else:
+            objetos_estaticos.add(objeto)
+    
+    # La cantidad de objetos cargados es la de los estáticos + 1 (si se encontró el robot)
+    num_objetos = len(objetos_estaticos) + (1 if robot_para_animar else 0)
+    print(f"✔ Escenario cargado con {num_objetos} objetos.")
+    
+    # Devolvemos los dos valores que esperamos
+    return objetos_estaticos, robot_para_animar
 # --- FIN DEL PASO 1 ---
 
 
@@ -132,11 +157,37 @@ except Exception as e:
     fondo_ajustado = None
 
 # Cargar los objetos del escenario JSON
-escenario_sprites = cargar_escenario_juego(juego_area.topleft)
+escenario_sprites, robot_animado = cargar_escenario_juego(juego_area.topleft)
+if robot_animado:
+    robot_animado_group = pygame.sprite.Group(robot_animado)
+else:
+    robot_animado_group = pygame.sprite.Group()
+
+# --- CÓDIGO DE CARGA SIMPLIFICADO ---
+
+# La llamada a la función ahora funciona porque devuelve dos valores.
+escenario_sprites, robot_animado = cargar_escenario_juego(juego_area.topleft)
+
+# Creamos un grupo de sprites solo para el robot animado (si se encontró).
+if robot_animado:
+    robot_animado_group = pygame.sprite.Group(robot_animado)
+else:
+    print("⚠️ Advertencia: No se encontró el robot en el escenario para animar.")
+    robot_animado_group = pygame.sprite.Group()
 
 
 # --- BUCLE PRINCIPAL ---
 running = True
+camino_a_dibujar = None
+camino_a_dibujar = None
+estado_animacion = "IDLE"  # Nuestros estados: IDLE, PLAYING, ARRIVED, RETURNING
+segmento_actual_idx = 0
+progreso_segmento = 0.0
+velocidad_animacion = 0.001 # O el valor que hayas elegido
+
+tiempo_llegada = 0 # Para el temporizador de 2 segundos
+posicion_inicio = None # Para recordar dónde empezar y a dónde volver
+
 while running:
     screen.fill(BG_COLOR)
 
@@ -154,6 +205,75 @@ while running:
     escenario_sprites.draw(screen)
 
 
+    # --- MÁQUINA DE ESTADOS DE ANIMACIÓN ---
+    if camino_a_dibujar:
+        # Dibujamos siempre la línea completa del camino en amarillo
+        if len(camino_a_dibujar) > 1:
+            pygame.draw.lines(screen, (255, 255, 0), False, camino_a_dibujar, 5)
+
+        # --- ESTADO 1: Yendo hacia la bandera ---
+        if estado_animacion == "PLAYING" and robot_animado:
+            p0 = camino_a_dibujar[segmento_actual_idx]
+            p1 = camino_a_dibujar[segmento_actual_idx + 1]
+            progreso_segmento += velocidad_animacion
+
+            if progreso_segmento >= 1.0:
+                progreso_segmento = 0.0
+                segmento_actual_idx += 1
+
+                if segmento_actual_idx >= len(camino_a_dibujar) - 1:
+                    # --- TRANSICIÓN: HEMOS LLEGADO ---
+                    estado_animacion = "ARRIVED"
+                    tiempo_llegada = pygame.time.get_ticks() # Iniciamos el temporizador
+                    robot_animado.rect.center = p1
+                    # Reseteamos la rotación a la original (mirando hacia abajo, que es 0 en nuestro sistema corregido)
+                    robot_animado.image = pygame.transform.rotate(robot_animado.original_image, 0)
+                else:
+                    nuevo_angulo = calcular_angulo(camino_a_dibujar[segmento_actual_idx], camino_a_dibujar[segmento_actual_idx + 1])
+                    robot_animado.image = pygame.transform.rotate(robot_animado.original_image, nuevo_angulo)
+            
+            if estado_animacion == "PLAYING":
+                current_x = p0[0] + (p1[0] - p0[0]) * progreso_segmento
+                current_y = p0[1] + (p1[1] - p0[1]) * progreso_segmento
+                robot_animado.rect.center = (int(current_x), int(current_y))
+
+        # --- ESTADO 2: En pausa en la bandera ---
+        elif estado_animacion == "ARRIVED":
+            # Verificamos si han pasado 2 segundos (2000 milisegundos)
+            if pygame.time.get_ticks() - tiempo_llegada > 2000:
+                # --- TRANSICIÓN: Iniciar el regreso ---
+                estado_animacion = "RETURNING"
+                progreso_segmento = 0.0 # Reiniciamos el progreso para el viaje de vuelta
+                # Orientamos el robot para el viaje de regreso
+                angulo_regreso = calcular_angulo(robot_animado.rect.center, posicion_inicio)
+                robot_animado.image = pygame.transform.rotate(robot_animado.original_image, angulo_regreso)
+
+        # --- ESTADO 3: Regresando al origen ---
+        elif estado_animacion == "RETURNING":
+            p0 = camino_a_dibujar[-1] # El punto de partida ahora es el final del camino
+            p1 = posicion_inicio     # El destino es el inicio original
+            progreso_segmento += velocidad_animacion
+
+            if progreso_segmento >= 1.0:
+                # --- TRANSICIÓN: Hemos vuelto ---
+                estado_animacion = "IDLE"
+                robot_animado.rect.center = posicion_inicio
+                camino_a_dibujar = None # Limpiamos el camino para la próxima vez
+            else:
+                current_x = p0[0] + (p1[0] - p0[0]) * progreso_segmento
+                current_y = p0[1] + (p1[1] - p0[1]) * progreso_segmento
+                robot_animado.rect.center = (int(current_x), int(current_y))
+
+    # --- DIBUJAR EL ROBOT ANIMADO ---
+    # Esto no cambia: siempre dibujamos el robot en su posición actual
+    if robot_animado_group:
+        robot_animado_group.draw(screen)
+    
+    # --- DIBUJAR EL ROBOT ANIMADO ---
+    # Dibujamos el grupo que contiene al robot animado.
+    # Esto se hace aquí para que se dibuje por encima de la línea del camino.
+    if robot_animado_group:
+        robot_animado_group.draw(screen)
     # --- LUEGO: interfaz de usuario ---
     mouse_pos = pygame.mouse.get_pos()
     combo_items_rects = get_combo_items_rects()
@@ -226,7 +346,30 @@ while running:
                 elif (selected_index == 4):
                     camino = busqueda_avara.Avara()
 
-                print (camino)
+                if camino:
+                    print(f"Camino encontrado (IDs): {camino}")
+                    # 1. Cargar todas las coordenadas del archivo
+                    todas_las_coords = cargar_coordenadas("logica/datos_completos.txt")
+                    # 2. Obtener el offset del área de juego
+                    offset = juego_area.topleft
+                    # 3. Traducir y guardar el resultado para dibujarlo
+                    camino_a_dibujar = traducir_camino_a_coordenadas(camino, todas_las_coords, offset)
+                    # --- INICIAR Y REINICIAR ESTADO DE ANIMACIÓN ---
+                    if camino_a_dibujar and len(camino_a_dibujar) > 1:
+                        estado_animacion = "PLAYING" # Iniciamos la animación
+                        segmento_actual_idx = 0
+                        progreso_segmento = 0.0
+
+                        posicion_inicio = camino_a_dibujar[0] # Guardamos la posición de inicio
+                        robot_animado.rect.center = posicion_inicio
+
+                        # Orientamos al robot para el primer tramo
+                        angulo_inicial = calcular_angulo(camino_a_dibujar[0], camino_a_dibujar[1])
+                        robot_animado.image = pygame.transform.rotate(robot_animado.original_image, angulo_inicial)
+                    print(f"Camino traducido a coordenadas de pantalla: {camino_a_dibujar}")
+                else:
+                    print("No se encontró un camino.")
+                    camino_a_dibujar = None
 
             elif combo_box.collidepoint(mx, my):
                 combo_open = not combo_open
@@ -241,6 +384,12 @@ while running:
                     combo_open = False
 
     pygame.display.flip()
+
+
+
+
+
+
 
 pygame.quit()
 sys.exit()

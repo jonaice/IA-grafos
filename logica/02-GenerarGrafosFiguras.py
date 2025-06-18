@@ -8,12 +8,13 @@ from shapely.geometry import Polygon
 BASE_DIR = os.path.dirname(__file__)
 ARCHIVO_ESCENARIO = os.path.abspath(os.path.join(BASE_DIR, "..", "interfaz", "escenario.json"))
 ARCHIVO_SALIDA = "logica/grafo_figuras.json"
-UMBRAL_SIMPLIFICACION = 0.01  # Tolerancia para simplificar contornos
+UMBRAL_SIMPLIFICACION = 0.02  # Tolerancia para simplificar contornos
 LETRA_POR_TIPO = {
     "robot": "R",
     "bandera": "F",
     "obstaculo": "O"
 }
+MARGEN_INFLADO = 50
 
 # === CARGAR ESCENARIO ===
 with open(ARCHIVO_ESCENARIO) as f:
@@ -104,6 +105,28 @@ for objeto in escenario:
     if len(vertices_locales) < 3:
         print(f"⚠️ Pocos vértices en {archivo}")
         continue
+
+    # --- INICIO DE LA NUEVA LÓGICA DE INFLADO Y SIMPLIFICACIÓN ---
+    # 1. Creamos un polígono con los vértices originales.
+    poligono_original = Polygon(vertices_locales)
+
+    # 2. Creamos una versión "inflada" del polígono usando buffer().
+    poligono_inflado = poligono_original.buffer(MARGEN_INFLADO)
+
+    # 3. Extraemos las coordenadas del nuevo polígono inflado y las convertimos
+    #    a un formato que OpenCV pueda usar (NumPy array).
+    coords_infladas_np = np.array(poligono_inflado.exterior.coords, dtype=np.int32)
+
+    # 4. --- NUEVO PASO DE SIMPLIFICACIÓN ---
+    #    Aplicamos el mismo algoritmo de simplificación al polígono inflado para
+    #    reducir su número de vértices de vuelta a una cantidad manejable.
+    #    La variable UMBRAL_SIMPLIFICACION controla qué tan agresiva es la simplificación.
+    epsilon = UMBRAL_SIMPLIFICACION * cv2.arcLength(coords_infladas_np, True)
+    approx_inflado = cv2.approxPolyDP(coords_infladas_np, epsilon, True)
+
+    # 5. Reemplazamos los vértices locales por los nuevos: inflados Y simplificados.
+    vertices_locales = [tuple(p[0]) for p in approx_inflado]
+    # --- FIN DE LA NUEVA LÓGICA ---
 
     tipo = obtener_prefijo(archivo)
     contador = contador_por_tipo.get(tipo, 0)
